@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+
+<html xmlns:th="https://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout (~{::body},'vets')}">
+
+<body>
+<h2>Veterinarians</h2>
+<div id="app">
+    <form class="form-horizontal" id="search-owner-form">
+        <div class="form-group">
+            <div class="control-group" id="lastNameGroup">
+                <label class="col-sm-2 control-label">Last name </label>
+                <div class="col-sm-5">
+                    <input class="form-control" size="30" maxlength="80" v-model="lastName" />
+                </div>
+                <div class="col-sm-2">
+                    <button class="btn btn-default" v-on:click.prevent="findVets">Find Vets</button>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+        </div>
+    </form>
+    <hr>
+    <table id="vets" class="table table-striped ">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Specialties</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr v-for="vet in vets">
+            <td v-text="vet.lastName"></td>
+            <td>
+                        <span v-for="veterinarian in vet.veterinarians"
+                              v-text="specialties[veterinarian.specialty_id-1].name"
+                              style="padding-right: 10px;"></span>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<script src="https://cdn.bootcss.com/vue/2.6.11/vue.min.js"></script>
+<script src="https://cdn.bootcss.com/axios/0.19.2/axios.min.js"></script>
+<script>
+    var vue = new Vue({
+        el: "#app",
+        data: {
+            lastName: "",
+            vets: [],
+            specialties: []
+        },
+        methods: {
+            findVets: function () {
+                axios.get("https://localhost:8080/api/v1/vets", {
+                    params: {
+                        lastName: this.lastName
+                    }
+                }).then(res => {
+                    this.vets = res.data;
+                }).catch(err => {
+                    console.error(err);
+                }), axios.get("https://localhost:8080/api/v1/specialties").then(res => {
+                    this.specialties = res.data;
+                }).catch(err => {
+                    console.error(err);
+                })
+            }
+        }
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,101 @@
+<html xmlns:th="https://www.thymeleaf.org"
+	th:replace="~{fragments/layout :: layout (~{::body},'owners')}">
+
+<body>
+	<h2>Owner</h2>
+	<div id="app">
+		<form class="form-horizontal" id="add-owner-form" method="post">
+
+			<div class="col-sm-offset-1 col-sm-11 alert" v-text="alertMessage"
+				v-bind:class="{ 'alert-danger':state == 2, 'alert-success':state == 1, 'invisible':state == 0 }"></div>
+
+			<div class="form-group">
+				<label class="col-sm-2 control-label">First Name</label>
+				<div class="col-sm-10">
+					<div>
+						<input class="form-control" type="text" id="firstName"
+							name="firstName" value="" v-model="owner.firstName" />
+					</div>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label">Last Name</label>
+				<div class="col-sm-10">
+					<div>
+						<input class="form-control" type="text" id="lastName"
+							name="lastName" value="" v-model="owner.lastName" />
+					</div>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label">Address</label>
+				<div class="col-sm-10">
+					<div>
+						<input class="form-control" type="text" id="address"
+							name="address" value="" v-model="owner.address" />
+					</div>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label">City</label>
+				<div class="col-sm-10">
+					<div>
+						<input class="form-control" type="text" id="city" name="city"
+							value="" v-model="owner.city" />
+					</div>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label">Telephone</label>
+				<div class="col-sm-10">
+					<div>
+						<input class="form-control" type="text" id="telephone"
+							name="telephone" value="" v-model="owner.telephone" />
+					</div>
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="col-sm-offset-2 col-sm-10">
+					<button class="btn btn-default" type="submit"
+						v-on:click.prevent="addOwner">add Owner</button>
+				</div>
+			</div>
+		</form>
+	</div>
+
+	<script src="https://cdn.bootcss.com/vue/2.6.11/vue.min.js"></script>
+	<script src="https://cdn.bootcss.com/axios/0.19.2/axios.min.js"></script>
+	<script>
+        var vue = new Vue({
+            el: "#app",
+            data: {
+                owner: {
+                    firstName: "Li",
+                    lastName: "Min",
+                    address: "111 road",
+                    city: "Beijing",
+                    telephone: "45663211"
+                },
+                alertMessage: "",
+                state: 0
+            },
+            methods: {
+                addOwner: function () {
+                    console.log(JSON.stringify(this.owner));
+                    axios.post("https://localhost:8080/api/v1/owners", this.owner)
+                        .then(res => {
+                            console.log(res.data);
+                            this.alertMessage = "Owner added.";
+                            this.state = 1;
+                        })
+                        .catch(err => {
+                            // console.error(err.response.data.message);
+                            this.alertMessage = err.response.data.message;
+                            this.state = 2;
+                        });
+                }
+            },
+        });
+    </script>
+</body>
+</html>

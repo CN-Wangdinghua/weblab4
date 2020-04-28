@@ -1,0 +1,83 @@
+<html xmlns:th="https://www.thymeleaf.org"
+	th:replace="~{fragments/layout :: layout (~{::body},'owners')}">
+
+<body>
+	<h2>Find Owners</h2>
+
+	<div id="app">
+		<form class="form-horizontal" id="search-owner-form">
+			<div class="form-group">
+				<div class="control-group" id="lastNameGroup">
+					<label class="col-sm-2 control-label">Last name </label>
+					<div class="col-sm-5">
+						<input class="form-control" size="30" maxlength="80"
+							v-model="lastName" />
+					</div>
+					<div class="col-sm-2">
+						<button class="btn btn-default" v-on:click.prevent="findOwners">Find
+							Owner</button>
+					</div>
+					<div class="col-sm-offset-1 col-sm-2">
+						<a class="btn btn-default" href="/owners/add">Add Owner</a>
+					</div>
+				</div>
+			</div>
+			<div class="form-group"></div>
+
+		</form>
+
+		<hr>
+
+		<table id="owners" class="table table-striped">
+			<thead>
+				<tr>
+					<th>Name</th>
+					<th>Address</th>
+					<th>City</th>
+					<th>Telephone</th>
+					<th>Pets</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr v-for="owner in owners">
+					<td v-text="owner.lastName"></td>
+					<td v-text="owner.address"></td>
+					<td v-text="owner.city"></td>
+					<td v-text="owner.telephone"></td>
+					<td><span v-for="pet in owner.pets" v-text="pet.name"
+						style="padding-right: 5px;"></span></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<script src="https://cdn.bootcss.com/vue/2.6.11/vue.min.js"></script>
+	<script src="https://cdn.bootcss.com/axios/0.19.2/axios.min.js"></script>
+
+	<script>
+        var vue = new Vue({
+            el: "#app",
+            data: {
+                lastName: "",
+                owners: []
+            },
+            methods: {
+                findOwners:function(){
+                    axios.get("https://localhost:8080/api/v1/owners",{
+                        params:{
+                            lastName: this.lastName
+                        }
+                    })
+                    .then(res => {
+                        this.owners = res.data;
+                        // console.log(res.data)
+                    })
+                    .catch(err => {
+                        console.error(err); 
+                    })
+                }
+            }
+        });
+    </script>
+</body>
+</html>
